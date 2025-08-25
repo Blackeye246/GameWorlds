@@ -1,26 +1,34 @@
+import { useState } from "react";
 
-import { useState } from 'react';
-import Header from '@/components/Header';
+export default function Signup() {
+  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [message, setMessage] = useState("");
 
-export default function Signup(){
-  const [name,setName]=useState('');
-  const [email,setEmail]=useState('');
-  const [password,setPassword]=useState('');
-  const submit=async(e)=>{
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch('/api/auth/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,password})});
+    const res = await fetch("/api/auth/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    });
     const data = await res.json();
-    if(data.error) return alert(data.error);
-    alert('Signup success! Now login.');
-    location.href='/login';
-  }
-  return (<div><Header/><div className="container" style={{maxWidth:420}}>
-    <h1>Signup</h1>
-    <form onSubmit={submit} style={{display:'grid',gap:10}}>
-      <input className="input" placeholder="Name" value={name} onChange={e=>setName(e.target.value)}/>
-      <input className="input" placeholder="Email" value={email} onChange={e=>setEmail(e.target.value)}/>
-      <input className="input" type="password" placeholder="Password" value={password} onChange={e=>setPassword(e.target.value)}/>
-      <button className="btn btn-primary">Create account</button>
-    </form>
-  </div></div>)
+    setMessage(data.message);
+  };
+
+  return (
+    <div style={{ textAlign: "center", padding: "50px" }}>
+      <h2>Signup</h2>
+      <form onSubmit={handleSubmit}>
+        <input name="name" placeholder="Name" onChange={handleChange} /><br/>
+        <input name="email" type="email" placeholder="Email" onChange={handleChange} /><br/>
+        <input name="password" type="password" placeholder="Password" onChange={handleChange} /><br/>
+        <button type="submit">Signup</button>
+      </form>
+      <p>{message}</p>
+    </div>
+  );
 }
